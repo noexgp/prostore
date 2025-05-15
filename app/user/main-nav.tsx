@@ -3,8 +3,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import React from 'react'
-import { title } from 'process'
-import { cartItemSchema } from '@/lib/validators'
 
 const links = [
   {

@@ -38,13 +38,16 @@ const ProductForm = ({
   const router = useRouter()
   const { toast } = useToast()
 
-  const form = useForm<z.infer<typeof insertProductSchema>>({
-    resolver:
-      type === 'Update'
-        ? zodResolver(updateProductSchema)
-        : zodResolver(insertProductSchema),
+  const isUpdate = type === 'Update'
+
+  const form = useForm<
+    z.infer<typeof insertProductSchema | typeof updateProductSchema>
+  >({
+    resolver: zodResolver(isUpdate ? updateProductSchema : insertProductSchema),
     defaultValues:
-      product && type === 'Update' ? product : productDefaultValues,
+      isUpdate && product
+        ? (product as z.infer<typeof updateProductSchema>)
+        : productDefaultValues,
   })
 
   const onSubmit: SubmitHandler<z.infer<typeof insertProductSchema>> = async (
