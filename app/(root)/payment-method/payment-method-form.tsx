@@ -4,10 +4,9 @@ import { useToast } from '@/hooks/use-toast'
 import { useTransition } from 'react'
 import { paymentMethodSchema } from '@/lib/validators'
 import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { DEFAULT_PAYMENT_METHOD, PAYMENT_METHODS } from '@/lib/constants'
-import { z } from 'zod'
-
 import {
   Form,
   FormControl,
@@ -16,11 +15,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Loader } from 'lucide-react'
-import { RadioGroup } from '@/components/ui/radio-group'
-import { RadioGroupItem } from '@/components/ui/radio-group'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { updateUserPaymentMethod } from '@/lib/actions/user.actions'
 
 const PaymentMethodForm = ({
@@ -43,6 +40,7 @@ const PaymentMethodForm = ({
   const onSubmit = async (values: z.infer<typeof paymentMethodSchema>) => {
     startTransition(async () => {
       const res = await updateUserPaymentMethod(values)
+
       if (!res.success) {
         toast({
           variant: 'destructive',
@@ -50,6 +48,7 @@ const PaymentMethodForm = ({
         })
         return
       }
+
       router.push('/place-order')
     })
   }
@@ -59,7 +58,7 @@ const PaymentMethodForm = ({
       <div className='max-w-md mx-auto space-y-4'>
         <h1 className='h2-bold mt-4'>Payment Method</h1>
         <p className='text-sm text-muted-foreground'>
-          Please select the payment Method
+          Please select a payment method
         </p>
         <Form {...form}>
           <form
@@ -68,7 +67,6 @@ const PaymentMethodForm = ({
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <div className='flex flex-col md:flex-row gap-5'>
-              {/* Add form fields or payment options here */}
               <FormField
                 control={form.control}
                 name='type'
@@ -88,21 +86,21 @@ const PaymentMethodForm = ({
                               <RadioGroupItem
                                 value={paymentMethod}
                                 checked={field.value === paymentMethod}
-                                id={paymentMethod}
                               />
                             </FormControl>
-                            <FormLabel className='font-normal cursor-pointer'>
+                            <FormLabel className='font-normal'>
                               {paymentMethod}
                             </FormLabel>
-                            <FormMessage />
                           </FormItem>
                         ))}
                       </RadioGroup>
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
+
             <div className='flex gap-2'>
               <Button type='submit' disabled={isPending}>
                 {isPending ? (

@@ -26,13 +26,13 @@ const UserButton = async () => {
 
   const firstInitial = session.user?.name?.charAt(0).toUpperCase() ?? ''
   return (
-    <div className='flex gap-2 items-center '>
+    <div className='flex gap-2 items-center'>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div className='flex item-center'>
+          <div className='flex items-center'>
             <Button
               variant='ghost'
-              className='relative w-8 h-9 rounded-full ml-2 flex item-center justify-center bg-gray-200'
+              className='w-8 h-9 rounded-full ml-2 bg-gray-200 flex items-center justify-center'
             >
               {firstInitial}
             </Button>
@@ -49,11 +49,29 @@ const UserButton = async () => {
               </div>
             </div>
           </DropdownMenuLabel>
+          <DropdownMenuItem>
+            <Link href='/user/profile' className='w-full'>
+              User Profile
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Link href='/user/orders' className='w-full'>
+              Order History
+            </Link>
+          </DropdownMenuItem>
+          {session?.user?.role === 'admin' && (
+            <DropdownMenuItem>
+              <Link href='/admin/overview' className='w-full'>
+                Admin
+              </Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem className='p-0 mb-1'>
             <form action={signOutUser} className='w-full'>
               <Button
                 className='w-full py-4 px-2 h-4 justify-start'
                 variant='ghost'
+                aria-label='Sign out'
               >
                 Sign Out
               </Button>

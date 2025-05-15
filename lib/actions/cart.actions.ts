@@ -175,7 +175,7 @@ export async function removeItemFromCart(productId: string) {
         ...calcPrice(cart.items as CartItem[]),
       },
     })
-    revalidatePath(`/products/${product.slug}`)
+    revalidatePath(`/product/${product.slug}`)
 
     return {
       success: true,

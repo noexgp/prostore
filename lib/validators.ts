@@ -6,7 +6,7 @@ const currency = z
   .string()
   .refine(
     (value) => /^\d+(\.\d{2})?$/.test(formatNumberWithDecimal(Number(value))),
-    'Price must be have exactly two decimal places'
+    'Price must have exactly two decimal places'
   )
 
 //Schema for inserting products
@@ -21,6 +21,11 @@ export const insertProductSchema = z.object({
   isFeatured: z.boolean(),
   banner: z.string().nullable(),
   price: currency,
+})
+
+//Schema for updating products
+export const updateProductSchema = insertProductSchema.extend({
+  id: z.string().min(1, 'Id is required'),
 })
 
 //Schema for signing users in
@@ -86,9 +91,9 @@ export const paymentMethodSchema = z
     message: 'Invalid payment method',
   })
 
-//Schema for inserting order
+// Schema for inserting order
 export const insertOrderSchema = z.object({
-  userId: z.string().min(1, 'User is requiered'),
+  userId: z.string().uuid(), // Assuming userId is a UUID
   itemsPrice: currency,
   shippingPrice: currency,
   taxPrice: currency,
@@ -97,6 +102,9 @@ export const insertOrderSchema = z.object({
     message: 'Invalid payment method',
   }),
   shippingAddress: shippingAddressSchema,
+  cashTendered: currency.default('0.00'),
+  changeDue: currency.default('0.00'),
+  isPaid: z.boolean().default(false),
 })
 
 //Schema for inserting an order
@@ -107,4 +115,24 @@ export const insertOrderItemSchema = z.object({
   name: z.string(),
   price: currency,
   qty: z.number(),
+})
+
+//Schema for
+export const paymentResultSchema = z.object({
+  id: z.string(),
+  status: z.string(),
+  email_address: z.string(),
+  pricePaid: z.string(),
+})
+
+// Schema for updating the user profile
+export const updateProfileSchema = z.object({
+  name: z.string().min(3, 'Name must be at least 3 characters'),
+  email: z.string().min(3, 'Name must be at least 3 characters'),
+})
+
+//Schemna to update users
+export const updateUserSchema = updateProfileSchema.extend({
+  id: z.string().min(1, 'Id is required'),
+  role: z.string().min(1, 'Role is required'),
 })

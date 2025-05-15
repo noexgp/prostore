@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Order" ADD COLUMN     "cashTendered" DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+ADD COLUMN     "changeDue" DECIMAL(12,2) NOT NULL DEFAULT 0.00;
