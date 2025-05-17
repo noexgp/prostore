@@ -117,6 +117,7 @@ model Order {
   createdAt       DateTime    @default(now()) @db.Timestamp(6)
   user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   orderitems      OrderItem[]
+  invoiceNumber   Int         @default(autoincrement())
 }
 
 model OrderItem {
