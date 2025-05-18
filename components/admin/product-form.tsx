@@ -38,16 +38,13 @@ const ProductForm = ({
   const router = useRouter()
   const { toast } = useToast()
 
-  const isUpdate = type === 'Update'
-
-  const form = useForm<
-    z.infer<typeof insertProductSchema | typeof updateProductSchema>
-  >({
-    resolver: zodResolver(isUpdate ? updateProductSchema : insertProductSchema),
+  const form = useForm<z.infer<typeof insertProductSchema>>({
+    resolver:
+      type === 'Update'
+        ? zodResolver(updateProductSchema)
+        : zodResolver(insertProductSchema),
     defaultValues:
-      isUpdate && product
-        ? (product as z.infer<typeof updateProductSchema>)
-        : productDefaultValues,
+      product && type === 'Update' ? product : productDefaultValues,
   })
 
   const onSubmit: SubmitHandler<z.infer<typeof insertProductSchema>> = async (
@@ -139,7 +136,7 @@ const ProductForm = ({
               >
             }) => (
               <FormItem className='w-full'>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Slug</FormLabel>
                 <FormControl>
                   <div className='relative'>
                     <Input placeholder='Enter slug' {...field} />
@@ -261,21 +258,26 @@ const ProductForm = ({
                 <Card>
                   <CardContent className='space-y-2 mt-2 min-h-48'>
                     <div className='flex-start space-x-2'>
-                      {images.map((image: string) => (
-                        <Image
-                          key={image}
-                          src={image}
-                          alt='product image'
-                          className='w-20 h-20 object-cover object-center rounded-sm'
-                          width={100}
-                          height={100}
-                        />
-                      ))}
+                      {Array.isArray(images) &&
+                        images.map((image: string, idx: number) => (
+                          <Image
+                            key={`${image}-${idx}`}
+                            src={image}
+                            alt='product image'
+                            className='w-20 h-20 object-cover object-center rounded-sm'
+                            width={100}
+                            height={100}
+                          />
+                        ))}
                       <FormControl>
                         <UploadButton
                           endpoint='imageUploader'
                           onClientUploadComplete={(res: { url: string }[]) => {
-                            form.setValue('images', [...images, res[0].url])
+                            const uploaded = res.map((r) => r.url)
+                            form.setValue('images', [
+                              ...(images || []),
+                              ...uploaded,
+                            ])
                           }}
                           onUploadError={(error: Error) => {
                             toast({
@@ -313,7 +315,7 @@ const ProductForm = ({
                   </FormItem>
                 )}
               />
-              {isFeatured && banner && (
+              {isFeatured && banner && banner.startsWith('http') && (
                 <Image
                   src={banner}
                   alt='banner image'
@@ -323,7 +325,7 @@ const ProductForm = ({
                 />
               )}
 
-              {isFeatured && !banner && (
+              {isFeatured && (!banner || banner.trim() === '') && (
                 <UploadButton
                   endpoint='imageUploader'
                   onClientUploadComplete={(res: { url: string }[]) => {
