@@ -128,7 +128,7 @@ const Invoice: React.FC<InvoiceProps> = ({ data }) => {
                   <td className='p-2 border'>{item.quantity}</td>
                   <td className='p-2 border'>₱{item.rate.toFixed(2)}</td>
                   <td className='p-2 border'>
-                    ${(item.quantity * item.rate).toFixed(2)}
+                    ₱{(item.quantity * item.rate).toFixed(2)}
                   </td>
                 </tr>
               ))}

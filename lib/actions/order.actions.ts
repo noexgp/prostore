@@ -500,7 +500,7 @@ export async function getOrderForInvoice(orderId: string) {
       : order.createdAt
       ? order.createdAt.toLocaleDateString()
       : 'Unknown Due Date',
-    paymentMethod: order.paymentResult?.status || 'Pending', // Assuming status holds payment method info
+    paymentMethod: order.paymentMethod, // Assuming status holds payment method info
     items: order.orderitems?.map((item) => ({
       description: item.name,
       quantity: item.qty,
