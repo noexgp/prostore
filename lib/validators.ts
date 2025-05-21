@@ -146,6 +146,6 @@ export const insertReviewSchecma = z.object({
   rating: z.coerce
     .number()
     .int()
-    .min(1, 'Rating must be at least 5')
-    .max(1, 'Rating must be at most 5'),
+    .min(1, 'Rating must be at least 1')
+    .max(5, 'Rating must be at most 5'),
 })

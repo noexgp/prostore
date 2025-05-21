@@ -15,8 +15,8 @@ const Header = () => {
             <Image
               src='/images/cml-logo.svg'
               alt={`${APP_NAME} logo`}
-              height={100}
-              width={100}
+              height={40}
+              width={80}
               priority={true}
             />
             <span className='hidden lg:block font-bold text-2xl ml-3'>
