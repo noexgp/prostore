@@ -7,7 +7,7 @@ import { getMyCart } from './cart.actions'
 import { getUserById } from './user.actions'
 import { insertOrderSchema } from '../validators'
 import { prisma } from '@/db/prisma'
-import { CartItem, PaymentResult } from '@/types'
+import { CartItem, PaymentResult, ShippingAddress } from '@/types'
 import { paypal } from '../paypal'
 import { revalidatePath } from 'next/cache'
 import { PAGE_SIZE } from '../constants'
@@ -436,4 +436,83 @@ export async function deliverOrder(orderId: string) {
   } catch (error) {
     return { success: false, message: formatError(error) }
   }
+}
+
+//get Order for Invoice
+export async function getOrderForInvoice(orderId: string) {
+  // Fetch order data from the database
+  const orderRaw = await prisma.order.findUnique({
+    where: {
+      id: orderId,
+    },
+    include: {
+      orderitems: true,
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
+  })
+
+  // Check if orderRaw is null or undefined
+  if (!orderRaw) {
+    throw new Error('Order not found')
+  }
+
+  // Destructure and safely type cast orderRaw values
+  const order = {
+    ...orderRaw,
+    shippingAddress: orderRaw?.shippingAddress as ShippingAddress, // Assuming this is a valid ShippingAddress
+    paymentResult: orderRaw?.paymentResult as PaymentResult, // Assuming this is a valid PaymentResult
+    totalPrice:
+      typeof orderRaw?.totalPrice === 'string'
+        ? parseFloat(orderRaw?.totalPrice)
+        : orderRaw?.totalPrice,
+    taxPrice:
+      typeof orderRaw?.taxPrice === 'string'
+        ? parseFloat(orderRaw?.taxPrice)
+        : orderRaw?.taxPrice,
+    itemsPrice:
+      typeof orderRaw?.itemsPrice === 'string'
+        ? parseFloat(orderRaw?.itemsPrice)
+        : orderRaw?.itemsPrice,
+  }
+
+  // Prepare the invoice data
+  const invoiceData = {
+    company: {
+      name: 'Your Store Name',
+      address: '123 Store Lane, Business City',
+      email: 'support@yourstore.com',
+    },
+    customer: {
+      name: order.user?.name || 'Unknown Customer',
+      address: `${order.shippingAddress?.streetAddress}, ${order.shippingAddress?.city}, ${order.shippingAddress?.postalCode}, ${order.shippingAddress?.country}`,
+    },
+    invoiceNumber: `INV-${order.id}`, // You could add more complex logic to generate an invoice number if needed
+    invoiceDate: order.createdAt
+      ? order.createdAt.toLocaleDateString()
+      : 'Unknown Date',
+    dueDate: order.paidAt
+      ? order.paidAt.toLocaleDateString()
+      : order.createdAt
+      ? order.createdAt.toLocaleDateString()
+      : 'Unknown Due Date',
+    paymentMethod: order.paymentResult?.status || 'Pending', // Assuming status holds payment method info
+    items: order.orderitems?.map((item) => ({
+      description: item.name,
+      quantity: item.qty,
+      rate: parseFloat(item.price),
+    })),
+    totalPrice: order.totalPrice,
+    taxRate:
+      order.itemsPrice && order.itemsPrice > 0
+        ? (order.taxPrice / order.itemsPrice) * 100 // Tax Rate as a percentage
+        : 0,
+    notes: 'Thank you for your business!',
+  }
+
+  return invoiceData
 }

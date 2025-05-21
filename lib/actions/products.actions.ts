@@ -12,7 +12,6 @@ export async function getLatestProducts() {
     take: LATEST_PRODUCTS_LIMIT,
     orderBy: { createdAt: 'desc' },
   })
-
   return convertToPlainObject(data)
 }
 
@@ -191,7 +190,6 @@ export async function getAllCategories() {
     by: ['category'],
     _count: true,
   })
-
   return data
 }
 
@@ -203,5 +201,21 @@ export async function getFeaturedProducts() {
     take: 4,
   })
 
+  return convertToPlainObject(data)
+}
+
+//Get Products without filter
+
+export type Product = {
+  name: string
+  price: string
+  id: string
+}
+
+export async function getProducts(): Promise<Product[]> {
+  const data = await prisma.product.findMany({
+    select: { name: true, price: true, id: true },
+    orderBy: { name: 'asc' },
+  })
   return convertToPlainObject(data)
 }

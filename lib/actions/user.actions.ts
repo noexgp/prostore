@@ -17,6 +17,7 @@ import { z } from 'zod'
 import { PAGE_SIZE } from '../constants'
 import { revalidatePath } from 'next/cache'
 import { Prisma } from '@prisma/client'
+import { redirect } from 'next/navigation'
 
 //Sign in the user with credentials
 export async function signInWithCredentials(
@@ -51,7 +52,7 @@ export async function signUpUser(prevState: unknown, formData: FormData) {
       password: formData.get('password'),
       confirmPassword: formData.get('confirmPassword'),
     })
-    const plainPassword = user.password
+    // const plainPassword = user.password
 
     user.password = hashSync(user.password, 10)
     await prisma.user.create({
@@ -61,11 +62,11 @@ export async function signUpUser(prevState: unknown, formData: FormData) {
         password: user.password,
       },
     })
-    await signIn('credentials', {
-      email: user.email,
-      password: plainPassword,
-    })
-
+    //  await signIn('credentials', {
+    //    email: user.email,
+    //   password: plainPassword,
+    //  })
+    redirect('/admin/users')
     return { success: true, message: 'User registered successfully' }
   } catch (error) {
     if (isRedirectError(error)) throw error

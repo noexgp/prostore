@@ -62,7 +62,11 @@ const AdminOrdersPage = async (props: {
           <TableBody>
             {orders.data.map((order) => (
               <TableRow key={order.id}>
-                <TableCell>{formatId(order.id)}</TableCell>
+                <TableCell>
+                  {String(order.invoiceNumber).padStart(10, '0') +
+                    ' ' +
+                    formatId(order.id)}
+                </TableCell>
                 <TableCell>
                   {formatDateTime(order.createdAt).dateTime}
                 </TableCell>

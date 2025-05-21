@@ -7,15 +7,15 @@ import Link from 'next/link'
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { signUpUser } from '@/lib/actions/user.actions'
-import { useSearchParams } from 'next/navigation'
+//import { useSearchParams } from 'next/navigation'
 
 const SignUpForm = () => {
   const [data, action] = useActionState(signUpUser, {
     success: false,
     message: '',
   })
-  const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || '/'
+  // const searchParams = useSearchParams()
+  const callbackUrl = '/admin/overview' //searchParams.get('callbackUrl') || '/admin/overview'
 
   const SignUpButton = () => {
     const { pending } = useFormStatus()

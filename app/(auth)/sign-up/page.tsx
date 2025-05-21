@@ -10,8 +10,8 @@ import Image from 'next/image'
 import { APP_NAME } from '@/lib/constants'
 import { Metadata } from 'next'
 
-import { auth } from '@/auth'
-import { redirect } from 'next/navigation'
+//import { auth } from '@/auth'
+//import { redirect } from 'next/navigation'
 import SignUpForm from './sign-up-form'
 
 export const metadata: Metadata = {
@@ -23,12 +23,15 @@ const SignUpPage = async (props: {
     callbackUrl: string
   }>
 }) => {
-  const { callbackUrl } = await props.searchParams
+  // const { callbackUrl } = await props.searchParams
 
-  const session = await auth()
-  if (session) {
-    return redirect(callbackUrl || '/')
-  }
+  const callbackUrl = '/admin/overview'
+  console.log(callbackUrl, props)
+  //const session = await auth()
+  //if (session) {
+  // return redirect(callbackUrl || '/')
+  // return redirect('/sign-up')
+  //}
 
   return (
     <div className='w-full max-w-md mx-auto'>
