@@ -2,21 +2,21 @@
 'use server'
 
 import { z } from 'zod'
-import { insertReviewSchecma } from '../validators'
+import { insertReviewSchema } from '../validators'
 import { formatError } from '../utils'
 import { auth } from '@/auth'
 import { prisma } from '@/db/prisma'
 import { revalidatePath } from 'next/cache'
 //create & Update Reviews
 export async function createUpdateReview(
-  data: z.infer<typeof insertReviewSchecma>
+  data: z.infer<typeof insertReviewSchema>
 ) {
   try {
     const session = await auth()
     if (!session) throw new Error('User not authenticated')
 
     // Validate and store the review
-    const review = insertReviewSchecma.parse({
+    const review = insertReviewSchema.parse({
       ...data,
       userId: session?.user?.id,
     })
@@ -106,15 +106,20 @@ export async function getReviews({ productId }: { productId: string }) {
   return { data }
 }
 
-//Get review by current user
+// Get a review written by the current user
 export async function getReviewByProductId({
   productId,
 }: {
   productId: string
 }) {
   const session = await auth()
+
   if (!session) throw new Error('User is not authenticated')
-  const data = await prisma.review.findFirst({
-    where: { productId, userId: session?.user?.id },
+
+  return await prisma.review.findFirst({
+    where: {
+      productId,
+      userId: session?.user?.id,
+    },
   })
 }
