@@ -12,6 +12,7 @@ import { paypal } from '../paypal'
 import { revalidatePath } from 'next/cache'
 import { PAGE_SIZE } from '../constants'
 import { Prisma } from '@prisma/client'
+import { startOfDay, endOfDay } from 'date-fns'
 
 // Create order and create the order items
 export async function createOrder({ cashTendered }: { cashTendered: number }) {
@@ -515,4 +516,29 @@ export async function getOrderForInvoice(orderId: string) {
   }
 
   return invoiceData
+}
+
+// This function returns order items within a specific date range
+export async function getSalesByDateRange(from: Date, to: Date) {
+  const data = await prisma.orderItem.findMany({
+    where: {
+      order: {
+        paidAt: {
+          gte: startOfDay(from),
+          lte: endOfDay(to),
+        },
+      },
+    },
+    include: {
+      product: true,
+      order: {
+        // Include the order details (including paymentMethod)
+        select: {
+          paymentMethod: true,
+        },
+      },
+    },
+  })
+
+  return convertToPlainObject(data)
 }
