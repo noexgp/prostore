@@ -13,7 +13,7 @@ const Header = () => {
           <CategoryDrawer />
           <Link href='/' className='flex-start ml-4'>
             <Image
-              src='/images/cml-logo.svg'
+              src='/images/logo.svg'
               alt={`${APP_NAME} logo`}
               height={40}
               width={80}
