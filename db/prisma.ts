@@ -1,25 +1,12 @@
 import { PrismaClient } from '@prisma/client'
-//import { neonConfig } from '@neondatabase/serverless'
-//import ws from 'ws'
-//neonConfig.webSocketConstructor = ws
-// To work in edge environments (Cloudflare Workers, Vercel Edge, etc.), enable querying over fetch
-// neonConfig.poolQueryViaFetch = true
 
-//Type definitions
-//declare global {
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined
+}
 
-// var prisma: PrismaClient | undefined
-//}
+const prismaClient = globalForPrisma.prisma ?? new PrismaClient()
 
-//const connectionString = `${process.env.DATABASE_URL}`
-//const adapter = new PrismaNeon({ connectionString })
-//const prisma = new PrismaClient({ adapter })
-
-//if (process.env.NODE_ENV === 'development') global.prisma = prisma
-
-//import { PrismaClient } from '@prisma/client'
-
-export const prisma = new PrismaClient().$extends({
+export const prisma = prismaClient.$extends({
   result: {
     product: {
       price: {
@@ -94,6 +81,108 @@ export const prisma = new PrismaClient().$extends({
     },
   },
 })
+
+// Reuse the Prisma client in development to avoid creating multiple instances
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prismaClient
+}
+
+// import { PrismaClient } from '@prisma/client'
+// //import { neonConfig } from '@neondatabase/serverless'
+// //import ws from 'ws'
+// //neonConfig.webSocketConstructor = ws
+// // To work in edge environments (Cloudflare Workers, Vercel Edge, etc.), enable querying over fetch
+// // neonConfig.poolQueryViaFetch = true
+
+// //Type definitions
+// //declare global {
+
+// // var prisma: PrismaClient | undefined
+// //}
+
+// //const connectionString = `${process.env.DATABASE_URL}`
+// //const adapter = new PrismaNeon({ connectionString })
+// //const prisma = new PrismaClient({ adapter })
+
+// //if (process.env.NODE_ENV === 'development') global.prisma = prisma
+
+// //import { PrismaClient } from '@prisma/client'
+
+// export const prisma = new PrismaClient().$extends({
+//   result: {
+//     product: {
+//       price: {
+//         compute(product) {
+//           return product.price.toString()
+//         },
+//       },
+//       rating: {
+//         compute(product) {
+//           return product.rating.toString()
+//         },
+//       },
+//     },
+//     cart: {
+//       itemsPrice: {
+//         needs: { itemsPrice: true },
+//         compute(cart) {
+//           return cart.itemsPrice.toString()
+//         },
+//       },
+//       shippingPrice: {
+//         needs: { shippingPrice: true },
+//         compute(cart) {
+//           return cart.shippingPrice.toString()
+//         },
+//       },
+//       taxPrice: {
+//         needs: { taxPrice: true },
+//         compute(cart) {
+//           return cart.taxPrice.toString()
+//         },
+//       },
+//       totalPrice: {
+//         needs: { totalPrice: true },
+//         compute(cart) {
+//           return cart.totalPrice.toString()
+//         },
+//       },
+//     },
+//     order: {
+//       itemsPrice: {
+//         needs: { itemsPrice: true },
+//         compute(order) {
+//           return order.itemsPrice.toString()
+//         },
+//       },
+//       shippingPrice: {
+//         needs: { shippingPrice: true },
+//         compute(order) {
+//           return order.shippingPrice.toString()
+//         },
+//       },
+//       taxPrice: {
+//         needs: { taxPrice: true },
+//         compute(order) {
+//           return order.taxPrice.toString()
+//         },
+//       },
+//       totalPrice: {
+//         needs: { totalPrice: true },
+//         compute(order) {
+//           return order.totalPrice.toString()
+//         },
+//       },
+//     },
+//     orderItem: {
+//       price: {
+//         compute(item) {
+//           return item.price.toString()
+//         },
+//       },
+//     },
+//   },
+// })
 
 // import { Pool, neonConfig } from '@neondatabase/serverless'
 // //import { PrismaNeon } from '@prisma/adapter-neon'
