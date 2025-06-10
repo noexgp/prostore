@@ -43,7 +43,7 @@ const SignInpage = async (props: {
           </Link>
           <CardTitle className='text-center'>Sign In</CardTitle>
           <CardDescription className='text-center'>
-            Sigh in to your account test bla
+            Sigh in to your account
           </CardDescription>
           <CardContent className='space-y-4'>
             <CredentialsSignInForm />
